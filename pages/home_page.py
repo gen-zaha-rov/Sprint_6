@@ -1,67 +1,44 @@
+import allure
 from selenium.webdriver.common.by import By
 from .base_page import BasePage
+from locators.home_page_locators import HomePageLocators 
+from selenium.webdriver.support import expected_conditions as EC
+from src.data import DataInfo
 
 
 # Домашняя страница
 class HomePage(BasePage):
-    # Локаторы для блока "Вопросы о важном"
-    QUESTIONS_LOCATORS = [
-        (By.ID, "accordion__heading-0"),
-        (By.ID, "accordion__heading-1"),
-        (By.ID, "accordion__heading-2"),
-        (By.ID, "accordion__heading-3"),
-        (By.ID, "accordion__heading-4"),
-        (By.ID, "accordion__heading-5"),
-        (By.ID, "accordion__heading-6"),
-        (By.ID, "accordion__heading-7"),
-    ]
 
-    ANSWERS_LOCATORS = [
-        (By.ID, "accordion__panel-0"),
-        (By.ID, "accordion__panel-1"),
-        (By.ID, "accordion__panel-2"),
-        (By.ID, "accordion__panel-3"),
-        (By.ID, "accordion__panel-4"),
-        (By.ID, "accordion__panel-5"),
-        (By.ID, "accordion__panel-6"),
-        (By.ID, "accordion__panel-7"),
-    ]
-
-    # Локаторы для кнопок "Заказать"
-    ORDER_BUTTON_SMALL_TOP = (
-        By.XPATH,
-        "//div[contains(@class,'Header_Nav')]/button[contains(@class, 'Button_Button')]",
-    )
-    ORDER_BUTTON_BIG_MIDDLE = (
-        By.XPATH,
-        "//div[contains(@class,'Home_FinishButton')]/button[contains(@class, 'Button_Button')]",
-    )
-
-    # Локаторы для логотипов
-    SAMOKAT_LOGO = (By.XPATH, "//a[contains(@class, 'Header_LogoScooter')]")
-    YANDEX_LOGO = (By.XPATH, "//a[contains(@class, 'Header_LogoYandex')]")
-
-    # Локатор для закрытия сообщения о куках
-    COOKIES_BUTTON = (By.ID, "rcc-confirm-button")
-
+    @allure.step('Открываем браузер')
     def __init__(self, driver):
         self.driver = driver
 
+    @allure.step('Клик на вопрос из списка в блоке "Вопросы о важном"')
     def click_faq_question(self, index):  # Нажатие на вопрос в блоке "Вопросы о важном"
-        self.click(self.QUESTIONS_LOCATORS[index])
+        self.click(HomePageLocators.QUESTIONS_LOCATORS[index])
 
+    @allure.step('Получение текста ответа на вопрос, который кликнули курсором')
     def get_faq_answer_text(self, index):  # Получение текста ответа на вопрос
-        return self.get_text(self.ANSWERS_LOCATORS[index])
+        return self.get_text(HomePageLocators.ANSWERS_LOCATORS[index])
 
+    @allure.step('Нажатие кнопки "Заказать"')
     def click_order_button(self, button_type="top"):  # Нажатие кнопки "Заказать"
         if button_type == "top":
-            self.click(self.ORDER_BUTTON_SMALL_TOP)
+            self.click(HomePageLocators.ORDER_BUTTON_SMALL_TOP)
         else:
-            self.click(self.COOKIES_BUTTON)
-            self.click(self.ORDER_BUTTON_BIG_MIDDLE)
+            self.click(HomePageLocators.COOKIES_BUTTON)
+            self.click(HomePageLocators.ORDER_BUTTON_BIG_MIDDLE)
 
+    @allure.step('Нажатие на логотип "Самокат"')
     def click_samokat_logo(self):  # Нажатие на лого Самокат
-        self.click(self.SAMOKAT_LOGO)
+        self.click(HomePageLocators.SAMOKAT_LOGO)
 
+    @allure.step('Нажатие на логотип Яндекс')
     def click_yandex_logo(self):  # Нажатие на лого Яндекс
-        self.click(self.YANDEX_LOGO)
+        self.click(HomePageLocators.YANDEX_LOGO)
+
+    @allure.step('Ожидание загрузки и переключение на новую вкладку')
+    def yandex_logo_wait_switch(self):
+        self.WebDriverWait(self.driver, 10).until(EC.number_of_windows_to_be(2))  # Переключиться на новую вкладку
+        self.driver.switch_to.window(self.driver.window_handles[1])  # Явное ожидание загрузки страницы
+        self.WebDriverWait(self.driver, 10).until(EC.url_to_be(DataInfo.url_dzen))    
