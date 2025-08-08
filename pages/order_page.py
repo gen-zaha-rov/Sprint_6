@@ -1,14 +1,9 @@
 import allure
-from selenium.webdriver.common.by import By
 from .base_page import BasePage
 from locators.order_page_locators import OrderPageLocators 
 
 
 class OrderPage(BasePage):  # Страница для оформления заказа ("Для кого самокат")
-
-    @allure.step('Открываем браузер')
-    def __init__(self, driver):
-        self.driver = driver
 
     @allure.step('Заполнение формы заказа, страница 1 из 2')
     def fill_personal_data(self, first_name, last_name, delivery_address, metro_station, phone):  # Заполнить форму заказа, часть 1 из 2

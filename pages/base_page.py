@@ -2,6 +2,7 @@ import allure
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.home_page import HomePage
+from src.data import DataInfo
 
 
 class BasePage:
@@ -33,3 +34,13 @@ class BasePage:
             return True
         except:
             return False
+        
+    @allure.step('Проверка соответствия текущей странице ожидаемой')
+    def is_current_url_correct(self, expected_url):
+        return self.driver.current_url == expected_url  
+
+    @allure.step('Ожидание загрузки и переключение на новую вкладку')
+    def yandex_logo_wait_switch(self):
+        self.WebDriverWait(self.driver, 10).until(EC.number_of_windows_to_be(2))  # Переключиться на новую вкладку
+        self.driver.switch_to.window(self.driver.window_handles[1])  # Явное ожидание загрузки страницы
+        self.WebDriverWait(self.driver, 10).until(EC.url_to_be(DataInfo.url_dzen))      
